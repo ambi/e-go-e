@@ -1,0 +1,92 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gosec
+    - errorlint
+    - bodyclose
+    - bidichk
+    - forcetypeassert
+    - noctx
+    - canonicalheader
+    - contextcheck
+    - durationcheck
+    - errchkjson
+    - exptostd
+    - fatcontext
+    - gocheckcompilerdirectives
+    - gocritic
+    - makezero
+    - modernize
+    - revive
+    - misspell
+    - nilnesserr
+    - unconvert
+    - unparam
+    - wastedassign
+    - nolintlint
+    - nilerr
+    - nilnil
+    - thelper
+
+  settings:
+    gocritic:
+      enabled-tags: [diagnostic, performance, style]
+      disabled-checks:
+        - paramTypeCombine
+        - hugeParam
+        - rangeValCopy
+        - unnamedResult
+        - commentedOutCode
+    gosec:
+      excludes: [G104, G404]
+      severity: medium
+      confidence: medium
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: increment-decrement
+        - name: var-declaration
+        - name: package-comments
+          disabled: true
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: indent-error-flow
+        - name: errorf
+        - name: empty-block
+        - name: superfluous-else
+        - name: unused-parameter
+          disabled: true
+        - name: unreachable-code
+        - name: redefines-builtin-id
+    errcheck:
+      check-type-assertions: false
+
+  exclusions:
+    presets: [common-false-positives, legacy]
+    rules:
+      # Match the reference repository's exceptions for test code.
+      - path: _test\.go
+        linters: [gosec, errcheck, forcetypeassert, noctx, bodyclose]
+
+formatters:
+  enable: [gofumpt]
+  settings:
+    gofumpt:
+      module-path: github.com/ambi/e-go-e
+      extra:
+        group-params: true

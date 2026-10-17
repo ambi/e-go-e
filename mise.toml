@@ -1,0 +1,61 @@
+min_version = "2026.10.12"
+
+[tools]
+go = "1.27.2"
+"aqua:golangci/golangci-lint" = "2.15.0"
+
+[env]
+GIN_MODE = "release"
+
+[tasks.setup]
+description = "Download locked Go dependencies"
+run = "go mod download"
+
+[tasks."check:format"]
+description = "Check formatting without modifying files"
+run = "golangci-lint fmt --diff --diff-colored=false"
+
+[tasks.test]
+description = "Run the sample E2E tests with the race detector"
+run = "go test -race -count=1 ./..."
+
+[tasks.check]
+description = "Check formatting, lint, and E2E tests"
+depends = ["check:format", "lint-go", "test"]
+
+[tasks.lint-go]
+description = "Run golangci-lint"
+run = "golangci-lint run ./..."
+
+[tasks.lint-go-fix]
+description = "Run golangci-lint with automatic fixes"
+run = "golangci-lint run --fix ./..."
+
+[tasks.format-go]
+description = "Format Go source with gofumpt"
+run = "golangci-lint fmt"
+
+[tasks.verify-go]
+description = "Verify Go with lint and race-enabled tests"
+depends = ["check:format", "lint-go", "test"]
+
+[tasks.e2e]
+description = "Run Japanese Gherkin scenarios with Godog"
+run = "go test -count=1 -v ./e2e"
+
+[tasks."e2e:spec"]
+description = "Read the Japanese scenarios without running tests"
+run = "cat e2e/features/*.feature"
+
+[tasks.serve]
+description = "Start the Gin sample application on 127.0.0.1:3000"
+run = "go run ./cmd/sampleapp"
+
+[tasks.build-linux]
+description = "Build Linux app and E2E binaries for the current CPU architecture"
+env = { GOOS = "linux", CGO_ENABLED = "0" }
+run = [
+  "mkdir -p artifacts/linux",
+  "go build -o artifacts/linux/sampleapp ./cmd/sampleapp",
+  "go test -c -o artifacts/linux/e2e.test ./e2e",
+]
